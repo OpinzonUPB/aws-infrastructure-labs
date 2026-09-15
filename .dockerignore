@@ -1,0 +1,11 @@
+.git
+.gitignore
+.devcontainer
+README.md
+scripts
+loadtest
+results
+__pycache__
+**/__pycache__
+*.pyc
+.venv
