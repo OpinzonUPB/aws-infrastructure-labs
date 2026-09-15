@@ -72,19 +72,27 @@ def read_stats(stats_file: str):
 
 
 def read_k6_summary(summary_path: str):
+    """
+    Lee el JSON que produce `k6 run --summary-export=archivo.json`.
+
+    En k6 (probado con v2.2.0), cada métrica es un objeto plano, sin un
+    nivel "values" intermedio:
+      - Métricas tipo contador/tendencia (http_reqs, http_req_duration):
+        {"count": ..., "rate": ...} o {"avg": ..., "p(95)": ..., ...}
+      - Métricas tipo "rate" (http_req_failed): {"passes", "fails", "value"}
+        donde "value" es la fracción (0..1) de peticiones fallidas.
+    """
     with open(summary_path, "r") as f:
         data = json.load(f)
     metrics = data.get("metrics", {})
 
-    def get(metric_name, value_key, default=0.0):
-        values = metrics.get(metric_name, {}).get("values", {})
-        return values.get(value_key, default)
+    def get(metric_name, field, default=0.0):
+        return metrics.get(metric_name, {}).get(field, default)
 
     requests_per_second = get("http_reqs", "rate", 0.0)
     avg_latency_ms = get("http_req_duration", "avg", 0.0)
     p95_latency_ms = get("http_req_duration", "p(95)", 0.0)
-    # http_req_failed es una métrica "rate" (0..1) en k6 moderno.
-    error_rate = get("http_req_failed", "rate", 0.0) * 100
+    error_rate = get("http_req_failed", "value", 0.0) * 100
 
     return {
         "requests_per_second": round(requests_per_second, 2),

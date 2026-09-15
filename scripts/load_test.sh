@@ -73,15 +73,22 @@ trap 'kill "$STATS_PID" 2>/dev/null || true' EXIT
 
 # 3. Ejecutar k6 dentro de un contenedor Docker (imagen oficial grafana/k6),
 #    así no hace falta instalar nada más en Codespaces ni en EC2.
-#    --network host permite que el contenedor de k6 llegue a
-#    http://localhost:8000, el mismo puerto publicado por sizing-app.
+#    Se conecta a la misma red "sizing-net" que start_container.sh, y
+#    llega a la app por su nombre de contenedor (sizing-app), en lugar de
+#    usar --network host (que no funciona igual en Docker Desktop para
+#    Windows/macOS y no es necesario en Linux si ya existe la red).
+NETWORK="sizing-net"
 TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 RUN_ID="${USERS}users_$(date +%s)"
 SUMMARY_FILENAME="k6_${RUN_ID}_summary.json"
 
 echo ">> Ejecutando k6 (docker run grafana/k6)..."
-docker run --rm --network host \
-  -e BASE_URL="http://localhost:8000${ENDPOINT}" \
+# MSYS_NO_PATHCONV=1 solo para este comando: evita que Git Bash en Windows
+# "traduzca" por error las rutas destinadas al interior del contenedor
+# (p. ej. /scripts/script.js) a rutas del sistema de archivos de Windows.
+# En Linux (Codespaces/EC2) esta variable no tiene ningún efecto.
+MSYS_NO_PATHCONV=1 docker run --rm --network "$NETWORK" \
+  -e BASE_URL="http://sizing-app:8000${ENDPOINT}" \
   -v "$ROOT_DIR/loadtest:/scripts:ro" \
   -v "$RAW_DIR:/out" \
   grafana/k6 run \

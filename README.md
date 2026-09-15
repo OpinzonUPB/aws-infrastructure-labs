@@ -61,7 +61,7 @@ usan los scripts de `scripts/` en lugar de estos comandos manuales.
 | Endpoint    | Qué hace                                                              |
 |-------------|------------------------------------------------------------------------|
 | `GET /health`  | Responde de inmediato. Consumo mínimo. Sirve como línea base.       |
-| `GET /compute` | Cuenta números primos por fuerza bruta hasta `n` (por defecto 20000). Consume CPU de forma intencional e ineficiente. |
+| `GET /compute` | Cuenta números primos por fuerza bruta hasta `n` (por defecto 100000). Consume CPU de forma intencional e ineficiente. |
 | `GET /memory`  | Reserva `mb` megabytes de memoria (por defecto 50) durante `hold_seconds` segundos (por defecto 5) y luego los libera. |
 
 No hay base de datos ni servicios externos: todo el consumo de recursos ocurre dentro

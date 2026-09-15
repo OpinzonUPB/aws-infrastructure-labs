@@ -58,14 +58,14 @@ def _count_primes(upper_bound: int) -> int:
 
 
 @app.get("/compute")
-def compute(n: int = 20000):
+def compute(n: int = 100000):
     """
     Cuenta cuántos números primos hay por debajo de `n`.
 
-    El valor por defecto (n=20000) está pensado para que una sola llamada
+    El valor por defecto (n=100000) está pensado para que una sola llamada
     tome un tiempo perceptible (decenas a cientos de milisegundos), pero
     el tiempo real depende del hardware donde corra el contenedor. Puedes
-    ajustarlo con ?n=, por ejemplo /compute?n=40000 para generar más carga.
+    ajustarlo con ?n=, por ejemplo /compute?n=200000 para generar más carga.
     """
     start = time.perf_counter()
     primes_found = _count_primes(n)

@@ -18,17 +18,25 @@ MEMORY="${2:?Uso: ./scripts/start_container.sh <cpus> <memoria>   (ej: 1 512m)}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NAME="sizing-app"
 IMAGE="sizing-app"
+NETWORK="sizing-net"
 
 echo ">> Deteniendo contenedor previo (si existe)..."
 docker rm -f "$NAME" >/dev/null 2>&1 || true
+
+# Red dedicada para que el contenedor de k6 (en load_test.sh) pueda
+# encontrar a sizing-app por nombre, en lugar de depender de
+# --network host (que no funciona igual en Docker Desktop para
+# Windows/macOS). Crearla es una operación idempotente.
+docker network create "$NETWORK" >/dev/null 2>&1 || true
 
 echo ">> Construyendo imagen $IMAGE..."
 docker build -t "$IMAGE" "$ROOT_DIR"
 
 echo ">> Iniciando contenedor:"
-echo "     docker run -d --name $NAME --cpus=$CPUS --memory=$MEMORY -p 8000:8000 $IMAGE"
+echo "     docker run -d --name $NAME --network $NETWORK --cpus=$CPUS --memory=$MEMORY -p 8000:8000 $IMAGE"
 docker run -d \
   --name "$NAME" \
+  --network "$NETWORK" \
   --cpus="$CPUS" \
   --memory="$MEMORY" \
   -p 8000:8000 \
