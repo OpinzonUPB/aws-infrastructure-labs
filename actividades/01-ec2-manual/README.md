@@ -12,6 +12,8 @@ la aplicación contenerizada de este repositorio.
 - Cómo un Security Group protege el puerto SSH (y por qué **no** se abre a todo Internet).
 - Cómo conectarse con **EC2 Instance Connect**, sin llaves `.pem`.
 - El flujo `git clone` → `docker build` → `docker run` dentro de EC2.
+- Cómo descubrir los endpoints de una API con la documentación de FastAPI (`/docs`).
+- Que `/compute` presiona la **CPU** y `/memory` la **RAM**, y cómo verlo con `docker stats`.
 
 ## Arquitectura
 
@@ -184,15 +186,132 @@ docker run -d --name sizing-app -p 8000:8000 sizing-app
 - `docker run` crea y arranca un **contenedor** (una ejecución de esa imagen).
 - `-p 8000:8000` publica el puerto 8000 del contenedor en el puerto 8000 de la instancia.
 
-## Paso 7 — Probar la aplicación
+## Paso 7 — Probar todos los endpoints
+
+Hasta ahora solo comprobaste `/health`. Esta aplicación ofrece más endpoints, y dos de ellos
+sirven para **generar carga** sobre la instancia. Vamos a descubrirlos y a observar qué le
+hacen a la máquina.
+
+### 7.1 Estado del contenedor y de la aplicación
 
 ```bash
 docker ps
 curl http://localhost:8000/health
-curl "http://localhost:8000/compute?n=20000"
 ```
 
-Y para ver las IPs desde dentro de la instancia:
+`docker ps` debe mostrar `sizing-app` con `Up`, y `curl` responder `{"status":"ok"}`.
+
+### 7.2 Descubrir los endpoints con la documentación de FastAPI
+
+FastAPI genera automáticamente una documentación interactiva en **`/docs`** y su descripción
+técnica en **`/openapi.json`**. La página `/docs` necesita un navegador; desde esta terminal
+comprueba que existe y lista las rutas que describe `/openapi.json`:
+
+```bash
+curl -s -o /dev/null -w "%{http_code}\n" http://localhost:8000/docs
+curl -s http://localhost:8000/openapi.json | grep -oE '"/[a-z]+":\{"[a-z]+"'
+```
+
+Debes ver `200` y tres líneas: cada **ruta** y su **método HTTP**.
+
+```
+"/health":{"get"
+"/compute":{"get"
+"/memory":{"get"
+```
+
+> Para ver `/docs` en el navegador y ejecutar los endpoints con el botón **Try it out**, el
+> puerto 8000 debe estar habilitado en el Security Group. Eso se hace en la
+> [Actividad 02](../02-security-groups/README.md), donde abrirás `http://IP_PUBLICA:8000/docs`.
+
+### 7.3 Los endpoints de la aplicación
+
+Tomado del código de [`app/main.py`](../../app/main.py). Los tres son `GET` y **ningún parámetro es
+obligatorio** (todos tienen valor por defecto):
+
+| Endpoint | Propósito | Recurso afectado | Cómo probar |
+| --- | --- | --- | --- |
+| `GET /health` | Verificar que la aplicación está viva | Mínimo | `curl http://localhost:8000/health` |
+| `GET /compute` | Contar los números primos menores que `n` por fuerza bruta: genera carga de cálculo | **CPU** | `curl "http://localhost:8000/compute?n=1000000"` |
+| `GET /memory` | Reservar `mb` megabytes durante `hold_seconds` segundos y liberarlos: genera carga de memoria | **RAM** | `curl "http://localhost:8000/memory?mb=300&hold_seconds=15"` |
+
+Parámetros (van en la URL, después de `?`, separados por `&`):
+
+| Endpoint | Parámetro | Tipo | Por defecto | Notas |
+| --- | --- | --- | --- | --- |
+| `/compute` | `n` | entero | `100000` | mientras más grande, más tarda (una petición con `n=100000` dura décimas de segundo) |
+| `/memory` | `mb` | entero | `50` | la aplicación lo limita a un **máximo de 512** |
+| `/memory` | `hold_seconds` | número | `5.0` | segundos que mantiene la memoria reservada; máximo **30** |
+
+Respuestas esperadas (los valores exactos dependen de tu instancia):
+
+```
+/health   {"status":"ok"}
+/compute  {"n":1000000,"primes_found":78498,"elapsed_ms":5900.59}
+/memory   {"requested_mb":300,"allocated_mb":300,"clamped_to_max":false,
+           "held_seconds":15.0,"allocated_bytes":314572800}
+```
+
+- `primes_found` es la cantidad de primos menores que `n`; `elapsed_ms`, cuánto tardó en la
+  aplicación.
+- Si pides más de 512 MB, `allocated_mb` será `512` y `clamped_to_max` será `true`.
+- Un valor inválido (por ejemplo `n=abc`) devuelve **HTTP 422**, no una caída de la aplicación.
+
+> No uses valores enormes de `n` en una `t3.micro`: mientras calcula, ocupa un núcleo entero y
+> la petición puede tardar minutos.
+
+### 7.4 Ejecutar cada endpoint al menos una vez
+
+Ejecuta las tres llamadas de la tabla (`/health`, `/compute` y `/memory`) y anota lo que responde
+cada una. Este paso es la línea base: aún no observas el consumo.
+
+### 7.5 Observar el consumo con `docker stats`
+
+Necesitas **dos terminales** para ver el consumo *mientras* se ejecuta la petición:
+
+1. **Terminal A:** la que ya tienes abierta.
+2. **Terminal B:** abre **otra pestaña** de EC2 Instance Connect (Paso 4) y ejecuta:
+
+   ```bash
+   docker stats sizing-app
+   ```
+
+   Déjala corriendo: se actualiza cada segundo. Fíjate en las columnas **CPU %** y **MEM USAGE /
+   LIMIT** (el límite es toda la RAM de la instancia, porque no pusimos ninguno).
+
+En la **Terminal A**, ejecuta una prueba a la vez y **espera a que termine** antes de la siguiente,
+mirando la Terminal B:
+
+```bash
+# Prueba 1: CPU
+curl "http://localhost:8000/compute?n=1000000"
+
+# Prueba 2: memoria (dura 15 s, así te da tiempo de mirar)
+curl "http://localhost:8000/memory?mb=300&hold_seconds=15"
+```
+
+Después de cada una, espera 5 segundos y mira si el consumo baja. Cierra `docker stats` con
+`Ctrl+C` cuando termines.
+
+Referencia de lo que se espera (aproximado; tu instancia puede dar cifras distintas):
+
+| Momento | CPU % | MEM USAGE |
+| --- | --- | --- |
+| En reposo | cerca de `0%` | unos 30–35 MiB |
+| Durante `/compute` | cerca de **`100%`** (un núcleo completo) | casi sin cambio |
+| Durante `/memory` | cerca de `0%` | sube unos **300 MiB** |
+| Después de cada petición | vuelve cerca de `0%` | vuelve a unos 30–35 MiB |
+
+> **`100%` en `docker stats` equivale a un núcleo completo.** La aplicación usa un solo proceso,
+> así que `/compute` ocupa un núcleo y no más.
+
+Por qué son útiles: `/compute` presiona la **CPU** casi sin tocar la memoria, y `/memory` presiona
+la **RAM** casi sin tocar la CPU. Permiten probar cada recurso por separado. En la Actividad 06
+usarás estos mismos endpoints para dimensionar la instancia.
+
+## Paso 8 — Identificar la IP privada y la IP pública
+
+Desde dentro de la instancia:
 
 ```bash
 ip -4 -br addr
@@ -209,19 +328,35 @@ curl -s https://checkip.amazonaws.com
 
 - [ ] `docker ps` muestra el contenedor `sizing-app` con estado `Up`.
 - [ ] `curl http://localhost:8000/health` responde `{"status":"ok"}`.
+- [ ] Listaste las 3 rutas desde `/openapi.json` (`/health`, `/compute`, `/memory`).
+- [ ] Ejecutaste cada endpoint al menos una vez y anotaste su respuesta.
+- [ ] Viste en `docker stats` la CPU subir con `/compute` y la memoria subir con `/memory`, y
+  comprobaste que ambas bajan al terminar la petición.
 - [ ] Anotaste VPC ID, Subnet ID, IP privada e IP pública.
 - [ ] El Security Group solo tiene **una** regla de entrada: SSH desde la prefix list de EC2
   Instance Connect (nada con `0.0.0.0/0`).
 
 ## Preguntas de análisis
 
-1. ¿Por qué `curl http://localhost:8000/health` funciona, aunque el Security Group no tiene
+**Sobre los endpoints y el consumo de recursos (Paso 7):**
+
+1. ¿Qué diferencia observas entre ejecutar `/health` y ejecutar `/compute`?
+2. ¿Qué recurso aumenta principalmente al ejecutar `/compute`?
+3. ¿Qué recurso aumenta principalmente al ejecutar `/memory`?
+4. ¿Qué mostró `docker stats` durante cada prueba?
+5. ¿El consumo vuelve a disminuir después de finalizar la petición?
+6. ¿Qué endpoint sería más útil para evaluar la capacidad de **CPU** de una instancia?
+7. ¿Qué endpoint sería más útil para evaluar la capacidad de **memoria**?
+
+**Sobre EC2, redes y Docker:**
+
+8. ¿Por qué `curl http://localhost:8000/health` funciona, aunque el Security Group no tiene
    ninguna regla para el puerto 8000?
-2. ¿Qué diferencia hay entre la IP privada y la IP pública de tu instancia?
-3. ¿Qué diferencia hay entre `0.0.0.0/0`, `My IP` y la prefix list de EC2 Instance Connect? ¿Cuándo
+9. ¿Qué diferencia hay entre la IP privada y la IP pública de tu instancia?
+10. ¿Qué diferencia hay entre `0.0.0.0/0`, `My IP` y la prefix list de EC2 Instance Connect? ¿Cuándo
    usarías cada una?
-4. ¿Por qué no es buena idea dejar el puerto 22 abierto a `0.0.0.0/0`?
-5. ¿Qué diferencia hay entre `docker build` y `docker run`?
+11. ¿Por qué no es buena idea dejar el puerto 22 abierto a `0.0.0.0/0`?
+12. ¿Qué diferencia hay entre `docker build` y `docker run`?
 
 ## Limpieza de recursos
 

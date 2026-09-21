@@ -81,6 +81,17 @@ inbound rules → Add rule**:
 Guarda con **Save rules** y repite la prueba del Paso 2. Ahora responde `{"status":"ok"}`.
 No reiniciaste ni la instancia ni el contenedor: solo cambió el Security Group.
 
+Ahora sí puedes usar el navegador. Abre la documentación interactiva de FastAPI:
+
+```
+http://IP_PUBLICA:8000/docs
+```
+
+Verás los tres endpoints (`/health`, `/compute`, `/memory`). Pulsa uno, luego **Try it out** y
+**Execute** para llamarlo desde la página. Prueba `/health` y, con los valores por defecto,
+`/compute` y `/memory` (los mismos de la Actividad 01). Como el puerto solo está abierto para tu
+IP, nadie más puede generar carga en tu instancia.
+
 > **`My IP`** es la IP pública desde la que estás usando la consola en este momento. Si cambias
 > de red (por ejemplo, de WiFi a datos móviles), tu IP cambia y dejarás de tener acceso.
 >
@@ -134,6 +145,7 @@ docker rm -f sizing-app-8080
 - [ ] `localhost:8000/health` funciona dentro de la instancia.
 - [ ] Sin regla, `IP_PUBLICA:8000` da timeout desde tu computador.
 - [ ] Con la regla `TCP 8000 / My IP`, `IP_PUBLICA:8000/health` responde.
+- [ ] Abriste `http://IP_PUBLICA:8000/docs` en el navegador y ejecutaste un endpoint con **Try it out**.
 - [ ] Con el origen incorrecto (`192.0.2.1/32`), vuelve el timeout.
 - [ ] La regla SSH quedó restaurada con la prefix list (no con `0.0.0.0/0`).
 

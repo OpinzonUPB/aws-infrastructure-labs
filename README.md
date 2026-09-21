@@ -30,6 +30,7 @@ API FastAPI en [`app/main.py`](app/main.py), empaquetada por el [`Dockerfile`](D
 | `GET /health` | responde `{"status":"ok"}`; consumo mínimo |
 | `GET /compute` | cuenta números primos por fuerza bruta (`?n=`); consume CPU |
 | `GET /memory` | reserva memoria (`?mb=`) unos segundos (`?hold_seconds=`) |
+| `GET /docs` | documentación interactiva que FastAPI genera automáticamente |
 
 Para probarla en cualquier máquina con Docker:
 

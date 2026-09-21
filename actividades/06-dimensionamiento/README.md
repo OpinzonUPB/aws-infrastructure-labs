@@ -36,7 +36,8 @@ tamaños dentro de una sola instancia.
 
 Endpoints de la aplicación: `/health` (sin consumo), `/compute` (consume CPU: cuenta primos por
 fuerza bruta, `?n=`) y `/memory` (reserva `mb` megabytes durante `hold_seconds` segundos). Las
-pruebas de carga golpean `/compute`.
+pruebas de carga golpean `/compute`. Ya los exploraste en el Paso 7 de la
+[Actividad 01](../01-ec2-manual/README.md).
 
 ## Prerrequisitos
 
