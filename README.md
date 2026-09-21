@@ -16,6 +16,15 @@ Aplicación → Docker → prueba de carga → medición de CPU/RAM → límites
 
 ---
 
+## Actividades
+
+| Actividad | Qué trabaja | Dónde está |
+|-----------|-------------|------------|
+| 01 — Dimensionamiento de CPU/RAM | Medir cuántos recursos necesita un contenedor | Este documento |
+| 02 — Del contenedor local a AWS EC2 | Ejecutar el mismo contenedor en Codespaces y luego en EC2 | [`actividad/actividad-02-docker-ec2/`](actividad/actividad-02-docker-ec2/README.md) |
+
+---
+
 ## Inicio rápido en GitHub Codespaces
 
 1. En GitHub, abre este repositorio.
@@ -345,6 +354,9 @@ Con el "Dimensionamiento recomendado" de la Etapa 10, busca:
 ---
 
 ## Ejecutar en una instancia EC2 (opcional)
+
+> Si es tu primera vez con EC2, sigue primero la guía paso a paso de la
+> [Actividad 02](actividad/actividad-02-docker-ec2/README.md).
 
 Este mismo laboratorio corre igual en una instancia Ubuntu de EC2 (probado
 conceptualmente sobre Ubuntu 22.04/24.04):

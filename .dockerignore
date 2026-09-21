@@ -2,6 +2,7 @@
 .gitignore
 .devcontainer
 README.md
+actividad
 scripts
 loadtest
 results
