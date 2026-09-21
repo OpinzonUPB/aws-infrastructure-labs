@@ -3,8 +3,8 @@
 # Automatiza lo que en la Actividad 01 hicimos a mano.
 set -euxo pipefail
 
-REPO_URL="https://github.com/OpinzonUPB/docker-sizing-lab.git"
-APP_DIR="/opt/docker-sizing-lab"
+REPO_URL="https://github.com/OpinzonUPB/aws-infrastructure-labs.git"
+APP_DIR="/opt/aws-infrastructure-labs"
 
 export HOME=/root
 export DEBIAN_FRONTEND=noninteractive

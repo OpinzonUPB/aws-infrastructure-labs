@@ -60,7 +60,7 @@ pruebas de carga golpean `/compute`. Ya los exploraste en el Paso 7 de la
 ## Paso 1 — Línea base
 
 ```bash
-cd ~/docker-sizing-lab
+cd ~/aws-infrastructure-labs
 git pull
 ./load-tests/start_container.sh 1 512m
 curl http://localhost:8000/compute

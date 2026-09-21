@@ -1,4 +1,4 @@
-# docker-sizing-lab
+# aws-infrastructure-labs
 
 Repositorio didáctico y **progresivo** para aprender infraestructura en AWS. Usamos siempre la
 **misma aplicación** y el **mismo contenedor**; en cada actividad cambia la infraestructura y la

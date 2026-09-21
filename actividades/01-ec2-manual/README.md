@@ -172,8 +172,8 @@ Debes ver la versión y un mensaje `Hello from Docker!`.
 ## Paso 6 — Clonar, construir y ejecutar
 
 ```bash
-git clone https://github.com/OpinzonUPB/docker-sizing-lab.git
-cd docker-sizing-lab
+git clone https://github.com/OpinzonUPB/aws-infrastructure-labs.git
+cd aws-infrastructure-labs
 ls
 ```
 
