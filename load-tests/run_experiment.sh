@@ -8,9 +8,9 @@
 # por pantalla antes de ejecutarse.
 #
 # Uso:
-#   ./scripts/run_experiment.sh                    # usuarios y duración por defecto
-#   ./scripts/run_experiment.sh "10 50"             # solo esos niveles de usuarios
-#   ./scripts/run_experiment.sh "10 50" 15          # y 15s por prueba en vez de 30s
+#   ./load-tests/run_experiment.sh                    # usuarios y duración por defecto
+#   ./load-tests/run_experiment.sh "10 50"             # solo esos niveles de usuarios
+#   ./load-tests/run_experiment.sh "10 50" 15          # y 15s por prueba en vez de 30s
 
 set -euo pipefail
 
@@ -18,7 +18,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 USERS_LIST="${1:-1 10 25 50 100}"
 DURATION="${2:-15}"
 
-# Configuraciones del laboratorio (ver README, sección "Configuraciones a probar").
+# Configuraciones del laboratorio (ver actividades/06-dimensionamiento/README.md).
 CONFIGS=(
   "A 0.5 256m"
   "B 1 512m"
@@ -34,18 +34,18 @@ for CONFIG in "${CONFIGS[@]}"; do
   echo "# Configuración $LABEL: $CPUS CPU / $MEMORY RAM"
   echo "##################################################################"
 
-  "$ROOT_DIR/scripts/start_container.sh" "$CPUS" "$MEMORY"
+  "$ROOT_DIR/load-tests/start_container.sh" "$CPUS" "$MEMORY"
 
   for USERS in $USERS_LIST; do
     echo ""
     echo "------------------------------------------------------------------"
     echo "Configuración $LABEL ($CPUS CPU / $MEMORY RAM) -> $USERS usuarios"
     echo "------------------------------------------------------------------"
-    "$ROOT_DIR/scripts/load_test.sh" "$USERS" "$DURATION" "/compute"
+    "$ROOT_DIR/load-tests/load_test.sh" "$USERS" "$DURATION" "/compute"
   done
 done
 
-"$ROOT_DIR/scripts/stop_container.sh"
+"$ROOT_DIR/load-tests/stop_container.sh"
 
 echo ""
-echo ">> Experimento completo. Revisa los resultados en results/results.csv"
+echo ">> Experimento completo. Revisa los resultados en load-tests/results/results.csv"

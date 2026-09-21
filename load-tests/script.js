@@ -1,7 +1,7 @@
 // Script de prueba de carga para k6.
 //
 // No define usuarios (VUs) ni duración aquí: esos valores se pasan desde
-// scripts/load_test.sh con las opciones --vus y --duration, para que
+// load-tests/load_test.sh con las opciones --vus y --duration, para que
 // todo el "qué se está probando" quede visible en la línea de comandos.
 //
 // La URL a golpear llega por la variable de entorno BASE_URL, por ejemplo:

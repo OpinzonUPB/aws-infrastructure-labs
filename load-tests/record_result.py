@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Combina el resumen JSON exportado por k6 con las muestras de `docker stats`
-tomadas durante la prueba, y agrega una fila a results/results.csv.
+tomadas durante la prueba, y agrega una fila a load-tests/results/results.csv.
 
 Se usa Python puro (sin dependencias adicionales) para no exigir jq ni
 otras herramientas: solo lo que ya necesita el laboratorio.

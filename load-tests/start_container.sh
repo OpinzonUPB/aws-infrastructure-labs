@@ -3,17 +3,17 @@
 # explícito de CPU y de memoria.
 #
 # Uso:
-#   ./scripts/start_container.sh <cpus> <memoria>
+#   ./load-tests/start_container.sh <cpus> <memoria>
 #
 # Ejemplos:
-#   ./scripts/start_container.sh 0.5 256m
-#   ./scripts/start_container.sh 1   512m
-#   ./scripts/start_container.sh 2   2g
+#   ./load-tests/start_container.sh 0.5 256m
+#   ./load-tests/start_container.sh 1   512m
+#   ./load-tests/start_container.sh 2   2g
 
 set -euo pipefail
 
-CPUS="${1:?Uso: ./scripts/start_container.sh <cpus> <memoria>   (ej: 1 512m)}"
-MEMORY="${2:?Uso: ./scripts/start_container.sh <cpus> <memoria>   (ej: 1 512m)}"
+CPUS="${1:?Uso: ./load-tests/start_container.sh <cpus> <memoria>   (ej: 1 512m)}"
+MEMORY="${2:?Uso: ./load-tests/start_container.sh <cpus> <memoria>   (ej: 1 512m)}"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 NAME="sizing-app"
