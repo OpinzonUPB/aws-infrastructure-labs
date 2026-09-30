@@ -10,7 +10,7 @@
 # Uso:
 #   ./load-tests/run_experiment.sh                    # usuarios y duración por defecto
 #   ./load-tests/run_experiment.sh "10 50"             # solo esos niveles de usuarios
-#   ./load-tests/run_experiment.sh "10 50" 15          # y 15s por prueba en vez de 30s
+#   ./load-tests/run_experiment.sh "10 50" 20          # y 20 s por prueba en vez de 15 s
 
 set -euo pipefail
 
