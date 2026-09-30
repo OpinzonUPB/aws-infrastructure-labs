@@ -1,0 +1,14 @@
+__pycache__/
+*.pyc
+.venv/
+
+# Resultados de las pruebas de carga
+load-tests/results/raw/*
+!load-tests/results/raw/.gitkeep
+
+# Terraform
+.terraform/
+.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
