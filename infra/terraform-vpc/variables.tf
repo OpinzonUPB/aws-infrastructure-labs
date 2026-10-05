@@ -1,5 +1,5 @@
 variable "aws_region" {
-  description = "Región de AWS. Debe ser la misma donde está tu Sandbox."
+  description = "Región de AWS. Debe ser la misma del Sandbox."
   type        = string
   default     = "us-east-1"
 }
@@ -29,11 +29,11 @@ variable "public_subnet_cidr" {
 }
 
 variable "my_ip_cidr" {
-  description = "Tu IP pública en formato CIDR, por ejemplo 203.0.113.25/32. Solo esta IP podrá acceder al puerto 8000."
+  description = "IP pública del estudiante en formato CIDR, por ejemplo 203.0.113.25/32. Solo esta IP podrá acceder al puerto 8000."
   type        = string
 
   validation {
     condition     = can(cidrhost(var.my_ip_cidr, 0))
-    error_message = "Escribe una IP en formato CIDR, por ejemplo 203.0.113.25/32."
+    error_message = "Se debe indicar una IP en formato CIDR, por ejemplo 203.0.113.25/32."
   }
 }

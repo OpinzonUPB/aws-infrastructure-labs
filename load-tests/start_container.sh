@@ -52,5 +52,5 @@ for i in $(seq 1 30); do
 done
 
 echo "ERROR: la aplicación no respondió después de ~15 segundos." >&2
-echo "Revisa los logs con: docker logs $NAME" >&2
+echo "Los logs se revisan con: docker logs $NAME" >&2
 exit 1

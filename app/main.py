@@ -22,7 +22,7 @@ from fastapi import FastAPI
 app = FastAPI(title="sizing-app")
 
 # Límite de seguridad: por muy alto que sea el valor que pida un estudiante,
-# nunca reservamos más de esto en una sola llamada. Así, aunque el
+# nunca se reserva más de esto en una sola llamada. Así, aunque el
 # contenedor tenga un límite de memoria bajo (ej. 256 MB) y el estudiante
 # pida más de lo que cabe, lo único que puede pasar es que el propio
 # contenedor sea terminado por el OOM killer de Docker -- no el host.
@@ -64,8 +64,8 @@ def compute(n: int = 100000):
 
     El valor por defecto (n=100000) está pensado para que una sola llamada
     tome un tiempo perceptible (decenas a cientos de milisegundos), pero
-    el tiempo real depende del hardware donde corra el contenedor. Puedes
-    ajustarlo con ?n=, por ejemplo /compute?n=200000 para generar más carga.
+    el tiempo real depende del hardware donde corra el contenedor. Se puede
+    ajustar con ?n=, por ejemplo /compute?n=200000 para generar más carga.
     """
     start = time.perf_counter()
     primes_found = _count_primes(n)

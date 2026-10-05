@@ -22,7 +22,7 @@ data "aws_vpc" "default" {
   default = true
 }
 
-# Subnet por defecto de la zona "a". Fijamos la zona porque algunas zonas de
+# Subnet por defecto de la zona "a". Se fija la zona porque algunas zonas de
 # disponibilidad no ofrecen todos los tipos de instancia (p. ej. t3.micro).
 data "aws_subnets" "default" {
   filter {
@@ -36,7 +36,7 @@ data "aws_subnets" "default" {
 }
 
 # Lista de prefijos administrada por AWS con las direcciones del servicio
-# EC2 Instance Connect en esta región. AWS la mantiene actualizada por nosotros.
+# EC2 Instance Connect en esta región. AWS la mantiene actualizada.
 data "aws_ec2_managed_prefix_list" "instance_connect" {
   name = "com.amazonaws.${var.aws_region}.ec2-instance-connect"
 }
@@ -53,7 +53,7 @@ data "aws_ami" "ubuntu" {
 }
 
 # ---------------------------------------------------------------------------
-# Security Group: lo que antes hicimos a mano en la consola
+# Security Group: lo que antes se hizo a mano en la consola
 # ---------------------------------------------------------------------------
 
 resource "aws_security_group" "app" {
@@ -76,7 +76,7 @@ resource "aws_vpc_security_group_ingress_rule" "ssh_instance_connect" {
   prefix_list_id    = data.aws_ec2_managed_prefix_list.instance_connect.id
 }
 
-# Puerto de la aplicación (8000): solo tu IP. Es una regla aparte del SSH.
+# Puerto de la aplicación (8000): solo la IP del estudiante. Es una regla aparte del SSH.
 resource "aws_vpc_security_group_ingress_rule" "app" {
   security_group_id = aws_security_group.app.id
   description       = "Aplicacion FastAPI desde mi IP"
@@ -86,7 +86,7 @@ resource "aws_vpc_security_group_ingress_rule" "app" {
   cidr_ipv4         = var.my_ip_cidr
 }
 
-# Terraform elimina la regla de salida por defecto, así que la declaramos:
+# Terraform elimina la regla de salida por defecto, así que se declara:
 # la instancia necesita salir a Internet para instalar paquetes y clonar el repo.
 resource "aws_vpc_security_group_egress_rule" "all" {
   security_group_id = aws_security_group.app.id

@@ -116,7 +116,7 @@ def main():
     k6_metrics = read_k6_summary(args.k6_summary)
     cpu_values, mem_values = read_stats(args.stats_file)
 
-    # Usamos el máximo observado durante la prueba (no el promedio), porque
+    # Se usa el máximo observado durante la prueba (no el promedio), porque
     # lo que interesa para dimensionar es el pico de uso, no un promedio
     # que puede esconder momentos de saturación.
     cpu_percent_max = round(max(cpu_values), 2) if cpu_values else ""

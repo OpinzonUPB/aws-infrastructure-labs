@@ -29,7 +29,7 @@ mkdir -p "$RAW_DIR"
 
 if ! docker inspect "$CONTAINER" >/dev/null 2>&1; then
   echo "ERROR: el contenedor '$CONTAINER' no existe todavía." >&2
-  echo "Ejecuta primero: ./load-tests/start_container.sh <cpus> <memoria>" >&2
+  echo "Primero se debe ejecutar: ./load-tests/start_container.sh <cpus> <memoria>" >&2
   exit 1
 fi
 

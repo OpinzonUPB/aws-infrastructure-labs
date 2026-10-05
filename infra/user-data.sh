@@ -1,6 +1,6 @@
 #!/bin/bash
 # User Data: se ejecuta UNA sola vez, como root, en el primer arranque de la instancia.
-# Automatiza lo que en la Actividad 01 hicimos a mano.
+# Automatiza lo que en la Actividad 01 se hizo a mano.
 # El registro completo queda en /var/log/cloud-init-output.log
 set -euxo pipefail
 
@@ -12,7 +12,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 # En el primer arranque, Ubuntu puede estar actualizando paquetes en segundo
 # plano (unattended-upgrades). En vez de fallar porque apt está ocupado,
-# esperamos hasta 5 minutos a que se libere.
+# se espera hasta 5 minutos a que se libere.
 APT_WAIT="-o DPkg::Lock::Timeout=300"
 
 # 1. Actualizar paquetes e instalar Git y Docker

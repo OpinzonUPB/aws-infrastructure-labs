@@ -1,6 +1,6 @@
 # aws-infrastructure-labs
 
-Repositorio didáctico y **progresivo** para aprender infraestructura en AWS. Usamos siempre la
+Repositorio didáctico y **progresivo** para aprender infraestructura en AWS. Se usa siempre la
 **misma aplicación** y el **mismo contenedor**; en cada actividad cambia la infraestructura y la
 forma de desplegar, no el código.
 
@@ -20,8 +20,8 @@ flowchart LR
 
 - Acceso al **Sandbox de AWS Academy** (región `us-east-1`).
 - Un navegador (la conexión a EC2 se hace con **EC2 Instance Connect** desde la consola).
-- **Terraform** en tu computador, solo para las actividades 04 y 05.
-- No necesitas instalar Docker en tu computador: Docker corre dentro de EC2.
+- **Terraform** en el computador del estudiante, solo para las actividades 04 y 05.
+- No se necesita Docker en el computador del estudiante: Docker corre dentro de EC2.
 
 ## La aplicación
 
