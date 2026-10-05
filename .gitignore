@@ -12,3 +12,6 @@ load-tests/results/raw/*
 *.tfstate
 *.tfstate.*
 *.tfvars
+
+# Archivos de macOS
+.DS_Store
